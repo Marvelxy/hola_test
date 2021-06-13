@@ -6,6 +6,10 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
@@ -24,7 +28,8 @@ class User implements UserInterface
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50, unique=true)
+     * @Assert\Unique
      */
     private $username;
 
@@ -113,5 +118,24 @@ class User implements UserInterface
         // Nous n'avons pas besoin de cette methode car nous n'utilions pas de plainPassword
         // Mais elle est obligatoire car comprise dans l'interface UserInterface
         // $this->plainPassword = null;
+    }
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        /*$metadata->addConstraint(new UniqueEntity([
+            'fields' => 'username',
+        ]));*/
+
+        $metadata->addConstraint('username', new UniqueEntity([
+           'groups' => ['createUser'],
+        ]));
+
+        // $metadata->addPropertyConstraint('username', new Assert\Unique());
+
+        // $metadata->addPropertyConstraint('username', new Assert\Unique());
+
+        // $metadata->addPropertyConstraint('username', new Assert\Unique());
+
+        // $metadata->addPropertyConstraint('email', new Assert\Email());
     }
 }
