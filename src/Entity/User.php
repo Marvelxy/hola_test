@@ -24,7 +24,7 @@ class User implements UserInterface
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50, unique=true)
      */
     private $username;
 
@@ -79,13 +79,18 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getRoles(): ?string
+    public function getRoles(): array
     {
-        return $this->roles;
+        // return $this->roles;
+        $roles = [];
+        array_push($roles, $this->roles);
+
+        return $roles;
     }
 
-    public function setRoles(?string $roles): self
+    public function setRoles($roles): self
     {
+        // $this->roles = explode(',', $roles);
         $this->roles = $roles;
 
         return $this;
@@ -113,5 +118,15 @@ class User implements UserInterface
         // Nous n'avons pas besoin de cette methode car nous n'utilions pas de plainPassword
         // Mais elle est obligatoire car comprise dans l'interface UserInterface
         // $this->plainPassword = null;
+    }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'username' => $this->getUsername(),
+            'role' => $this->getRoles()
+        ];
     }
 }
