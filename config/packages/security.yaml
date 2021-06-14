@@ -2,35 +2,61 @@ security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         # users_in_memory: { memory: null }
-        #users:
-        #    entity:
-        #        class: 'App\Entity\User'
-        #        property: 'username'
         users:
             entity:
                 class: App\Entity\User
                 property: username
     firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-        main:
+        #dev:
+        #    pattern: ^/(_(profiler|wdt)|css|images|js)/
+        #    security: false
+
+        #page:
+        #    pattern: ^/page
+        #    guard:
+        #        authenticators:
+        #            - App\Security\LoginFormAuthenticator
+        secured_area:
+            pattern: ^/users
+            stateless: true
             anonymous: false
-            provider: users
             http_basic:
                 realm: Secured Area
-
+                provider: users
+            security: true
+        main:
+            #pattern: ^/l
+            anonymous: true
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
 
             # https://symfony.com/doc/current/security/impersonating_user.html
-            switch_user: true
+            switch_user: false
+            guard:
+                authenticators:
+                    - App\Security\LoginFormAuthenticator
+
+            form_login:
+                login_path: app_login
+            logout:
+                path: app_logout
+                target: app_login
+        logout:
+            anonymous: false
+            pattern: ^/logout
+            guard:
+                authenticators:
+                    - App\Security\LoginFormAuthenticator
+            logout:
+                path: app_logout
+                target: app_login
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/users, roles: ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+
     encoders:
         App\Entity\User:
             algorithm: auto
