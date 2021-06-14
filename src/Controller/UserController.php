@@ -127,4 +127,80 @@ class UserController extends AbstractController
 
         return new JsonResponse($data, Response::HTTP_NOT_FOUND);
     }
+
+    /**
+     * @Route("/users/{id}", name="update_user", methods={"PUT"})
+     */
+    public function update(Request $request, $id, ValidatorInterface $validator): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            $message = ['No user with id '.$id];
+            return new JsonResponse($message, Response::HTTP_NOT_FOUND);
+        }
+
+        if (!empty($data['name'])) {
+            $user->setName($data['name']);
+        }
+
+        if (!empty($data['username'])) {
+            // Check for existing username
+            $user = $this->userRepository->findOneBy(['username' => $data['username']]);
+            $data = [];
+
+            $data = [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'username' => $user->getUsername(),
+                'role' => $user->getRoles(),
+            ];
+
+            if($data['id'] != $id){
+                $errorMessages = [
+                    'username already exist'
+                ];
+
+                return new JsonResponse($errorMessages, Response::HTTP_OK);
+            }
+
+            $user->setUsername($data['username']);
+        }
+
+        if (!empty($data['role'])) {
+            $user->setRoles($data['role']);
+        }
+
+        if (!empty($data['password'])) {
+            $newUser = new User();
+            $hashedPassword = $this->encoder->encodePassword($newUser, $data['password']);
+            $user->setPassword($hashedPassword);
+        }
+
+        $entityManager->flush();
+
+        return new JsonResponse($user->toArray(), Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/users/{id}", name="delete_user", methods={"DELETE"})
+     */
+    public function delete($id): JsonResponse
+    {
+        $user = $this->userRepository->findOneBy(['id' => $id]);
+
+        if (!$user) {
+            $message = ['No user with id '.$id];
+            return new JsonResponse($message, Response::HTTP_NOT_FOUND);
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        return new JsonResponse(['status' => 'User deleted'], Response::HTTP_OK);
+    }
 }

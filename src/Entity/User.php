@@ -6,10 +6,6 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
-
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
@@ -29,7 +25,6 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=50, unique=true)
-     * @Assert\Unique
      */
     private $username;
 
@@ -120,22 +115,13 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    public function toArray()
     {
-        /*$metadata->addConstraint(new UniqueEntity([
-            'fields' => 'username',
-        ]));*/
-
-        $metadata->addConstraint('username', new UniqueEntity([
-           'groups' => ['createUser'],
-        ]));
-
-        // $metadata->addPropertyConstraint('username', new Assert\Unique());
-
-        // $metadata->addPropertyConstraint('username', new Assert\Unique());
-
-        // $metadata->addPropertyConstraint('username', new Assert\Unique());
-
-        // $metadata->addPropertyConstraint('email', new Assert\Email());
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'username' => $this->getUsername(),
+            'role' => $this->getRoles()
+        ];
     }
 }
