@@ -150,16 +150,16 @@ class UserController extends AbstractController
         if (!empty($data['username'])) {
             // Check for existing username
             $user = $this->userRepository->findOneBy(['username' => $data['username']]);
-            $data = [];
+            $userData = [];
 
-            $data = [
+            $userData = [
                 'id' => $user->getId(),
                 'name' => $user->getName(),
                 'username' => $user->getUsername(),
                 'role' => $user->getRoles(),
             ];
 
-            if($data['id'] != $id){
+            if($userData['id'] != $id){
                 $errorMessages = [
                     'username already exist'
                 ];
