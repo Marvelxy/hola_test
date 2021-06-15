@@ -16,10 +16,26 @@
     <body>
         {% if app.user %}
             <div class="mb-3">
-                You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+                <a href="{{ path('index') }}">HOME</a> |
+                {% if role|default(null) %}
+                    {% if role == 'ADMIN' %}
+                        <a href="{{ path('page1') }}">PAGE 1</a> |
+                        <a href="{{ path('page2') }}">PAGE 2</a> |
+                    {% elseif role == 'PAGE_1' %}
+                        <a href="{{ path('page1') }}">PAGE 1</a> |
+                    {% elseif role == 'PAGE_2' %}
+                        <a href="{{ path('page2') }}">PAGE 2</a> |
+                    {% endif %}
+                {% endif %}
+                <a href="{{ path('app_logout') }}">Logout</a>
             </div>
-            {{ app.user.roles|join(', ') }}
+
+            <!--
+            <div>
+                You are logged in as {{ app.user.username }}
+            </div>-->
         {% endif %}
+
 
         {% block body %}{% endblock %}
     </body>

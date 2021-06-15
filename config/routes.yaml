@@ -4,3 +4,6 @@ index:
 page1:
     path: /page/1
     controller: App\Controller\PageController::page1
+page2:
+    path: /page/2
+    controller: App\Controller\PageController::page2
