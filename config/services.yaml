@@ -37,3 +37,9 @@ services:
 
     #sensio_framework_extra.view.listener:
     #    alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener
+    App\EventListener\SessionIdleListener:
+        bind:
+            $maxIdleTime: '%env(APP_SESSION_MAX_IDLE_TIME)%'
+            $session: '@session'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
