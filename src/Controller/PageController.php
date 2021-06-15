@@ -14,7 +14,7 @@ class PageController extends AbstractController
             $user = $this->getUser();
             $roles = $user->getRoles();
             return $this->render('page/index.html.twig', [
-                'number' => $user->getRoles(),
+                'role' => $user->getRoles()[0],
             ]);
         }
         else{
@@ -31,12 +31,32 @@ class PageController extends AbstractController
             if (in_array("ADMIN", $roles) || (in_array("PAGE_1", $roles)))
             {
                 return $this->render('page/page1.html.twig', [
-                    'number' => $user->getRoles(),
+                    'role' => $user->getRoles()[0],
                 ]);
             }
             else{
-                // return $this->redirectToRoute('app_login', [], 403);
-                $this->denyAccessUnlessGranted($roles);
+                return $this->redirect('/_error/403.html');
+            }
+        }
+        else{
+            return $this->redirectToRoute('app_login', [], 302);
+        }
+    }
+
+    public function page2(): Response
+    {
+        if ($this->getUser())
+        {
+            $user = $this->getUser();
+            $roles = $user->getRoles();
+            if (in_array("ADMIN", $roles) || (in_array("PAGE_2", $roles)))
+            {
+                return $this->render('page/page2.html.twig', [
+                    'role' => $user->getRoles()[0],
+                ]);
+            }
+            else{
+                return $this->redirect('/_error/403.html');
             }
         }
         else{
