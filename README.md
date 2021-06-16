@@ -136,4 +136,5 @@ I added a dashboard with nav.
     $ docker-compose exec -u 1000 app php bin/phpunit
 
 **Check test coverage**:
+    
     $ docker-compose exec app phpdbg -qrr ./vendor/bin/phpunit --coverage-text
