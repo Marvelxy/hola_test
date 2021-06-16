@@ -112,7 +112,7 @@ It is secured with basic HTTP Authentication. The admin details would work both 
     /users/4
 
 ##### Web Routes:
-I added a dashboard with nav.
+I added am home page and navigation to ease the navigation between pages.
 
     Root page: /
     PAGE_1   : /page/1
