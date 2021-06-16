@@ -9,6 +9,7 @@ parameters:
     #database_name: root
     #database_user: root
     #database_password: root
+    session_max_idle_time: 300
 
 services:
     # default configuration for services in *this* file
@@ -37,9 +38,15 @@ services:
 
     #sensio_framework_extra.view.listener:
     #    alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener
-    App\EventListener\SessionIdleListener:
-        bind:
-            $maxIdleTime: '%env(APP_SESSION_MAX_IDLE_TIME)%'
-            $session: '@session'
-        tags:
-            - { name: kernel.event_listener, event: kernel.request }
+
+    #App\EventListener\SessionIdleHandler:
+    #    bind:
+    #        $maxIdleTime: '%env(APP_SESSION_MAX_IDLE_TIME)%'
+    #        $session: '@session'
+    #    tags:
+    #        - { name: kernel.event_listener, event: kernel.request }
+
+    App.Handler.SessionIdle:
+        class: App\Security\SessionIdleHandler
+        arguments: ['%session_max_idle_time%']
+        tags: [{ name: kernel.event_listener, event: kernel.request }]

@@ -1,83 +1,48 @@
 <?php
 
-declare(strict_types=1);
+namespace App\Security;
 
-namespace App\EventListener;
-
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 
-class SessionIdleListener
+class SessionIdleHandler
 {
-    /**
-     * @var int
-     */
-    private $maxIdleTime;
 
-    /**
-     * @var Session
-     */
-    private $session;
+    protected $session;
+    protected $securityToken;
+    protected $router;
+    protected $maxIdleTime;
 
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $checker;
-
-    public function __construct(
-        string $maxIdleTime,
-        Session $session,
-        TokenStorageInterface $tokenStorage,
-        RouterInterface $router,
-        AuthorizationCheckerInterface $checker
-    ) {
-        $this->maxIdleTime = (int) $maxIdleTime;
+    public function __construct($maxIdleTime, SessionInterface $session, TokenStorageInterface $securityToken, RouterInterface $router)
+    {
         $this->session = $session;
-        $this->tokenStorage = $tokenStorage;
+        $this->securityToken = $securityToken;
         $this->router = $router;
-        $this->checker = $checker;
+        $this->maxIdleTime = $maxIdleTime;
     }
 
-    public function onKernelRequest(RequestEvent $event): void
+    public function onKernelRequest(GetResponseEvent $event)
     {
-        if (!$event->isMasterRequest()
-            || $this->maxIdleTime <= 0
-            || $this->isAuthenticatedAnonymously()) {
+        if (HttpKernelInterface::MASTER_REQUEST != $event->getRequestType()) {
+
             return;
         }
 
-        $session = $this->session;
-        $session->start();
+        if ($this->maxIdleTime > 0) {
 
-        if ((time() - $session->getMetadataBag()->getLastUsed()) <= $this->maxIdleTime) {
-            return;
+            $this->session->start();
+            $lapse = time() - $this->session->getMetadataBag()->getLastUsed();
+
+            if ($lapse > $this->maxIdleTime) {
+
+                $this->securityToken->setToken(null);
+                $this->session->getFlashBag()->set('info', 'You have been logged out due to inactivity.');
+                $event->setResponse(new RedirectResponse($this->router->generate('app_logout')));
+            }
         }
-
-        $this->tokenStorage->setToken();
-        $session->getFlashBag()->set('info', 'You have been logged out due to inactivity.');
-
-        $event->setResponse(new RedirectResponse($this->router->generate('app_login')));
-    }
-
-    private function isAuthenticatedAnonymously(): bool
-    {
-        return !$this->tokenStorage->getToken()
-            || !$this->checker->isGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY);
     }
 }

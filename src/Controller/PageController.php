@@ -17,9 +17,8 @@ class PageController extends AbstractController
                 'role' => $user->getRoles()[0],
             ]);
         }
-        else{
-            return $this->redirectToRoute('app_login', [], 302);
-        }
+
+        return $this->redirectToRoute('app_login', [], 302);
     }
 
     public function page1(): Response
@@ -34,13 +33,11 @@ class PageController extends AbstractController
                     'role' => $user->getRoles()[0],
                 ]);
             }
-            else{
-                return $this->redirect('/_error/403.html');
-            }
+
+            return $this->redirect('/_error/403.html');
         }
-        else{
-            return $this->redirectToRoute('app_login', [], 302);
-        }
+
+        return $this->redirectToRoute('app_login', [], 302);
     }
 
     public function page2(): Response
@@ -55,12 +52,10 @@ class PageController extends AbstractController
                     'role' => $user->getRoles()[0],
                 ]);
             }
-            else{
-                return $this->redirect('/_error/403.html');
-            }
+
+            return $this->redirect('/_error/403.html');
         }
-        else{
-            return $this->redirectToRoute('app_login', [], 302);
-        }
+
+        return $this->redirectToRoute('app_login', [], 302);
     }
 }
