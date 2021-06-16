@@ -42,7 +42,7 @@ Admin details:
 ##### Visit the app:
 Visit http://localhost:8000/
 
-##### Usage:
+### Usage:
 The REST API for the user entity is at:
 
     /users
