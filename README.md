@@ -1,8 +1,8 @@
-### What I didn't cover much
+## What I didn't cover much
 * Tests: PHPUnit + code coverage >= 80
 * Checks: PHPMD, PHP_CodeSniffer
 
-### Setup
+## Setup
 Clone the app and **cd** into the directory
 
 ##### Install dependencies:
@@ -42,14 +42,14 @@ Admin details:
 ##### Visit the app:
 Visit http://localhost:8000/
 
-### Usage:
+## Usage:
 The REST API for the user entity is at:
 
     /users
 
 It is secured with basic HTTP Authentication. The admin details would work both on the web login form and the API basic auth.
 
-##### API Routes:
+### API Routes:
 
 **Create user**:
 
@@ -111,7 +111,7 @@ It is secured with basic HTTP Authentication. The admin details would work both 
 
     /users/4
 
-##### Web Routes:
+### Web Routes:
 I added a dashboard with nav.
 
     Root page: /
