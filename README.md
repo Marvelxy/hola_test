@@ -7,7 +7,7 @@ Clone the app and **cd** into the directory
 
 ##### Install dependencies:
 
-    $ composeer install
+    $ composer install
 
 ##### Build the code:
     $ docker-compose build
